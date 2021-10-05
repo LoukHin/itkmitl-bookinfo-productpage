@@ -1,0 +1,7 @@
+services:
+  productpage:
+    build: .
+    container_name: productpage
+    image: ghcr.io/loukhin/itkmitl-bookinfo-productpage:dev
+    ports:
+      - "8083:9080"
