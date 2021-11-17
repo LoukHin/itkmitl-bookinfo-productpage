@@ -1,0 +1,19 @@
+productpage:
+  namespace: student36-bookinfo-dev
+  image: ghcr.io/loukhin/bookinfo-productpage
+  tag: dev
+  replicas: 1
+  imagePullSecrets: registry-bookinfo
+  port: 9080
+ingress:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  host: itkmitl.bookinfo.dev.opsta.net
+  path: "/student36/productpage(/|$)(.*)"
+  serviceType: ClusterIP
+extraEnv:
+  RATINGS_HOSTNAME: http://bookinfo-dev-ratings:8080
+  DETAILS_HOSTNAME: http://bookinfo-dev-details:9080
+  REVIEWS_HOSTNAME: http://bookinfo-dev-reviews:9080
+  COMMIT_SHA: CHANGEME

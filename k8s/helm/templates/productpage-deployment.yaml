@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.productpage.namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.productpage.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}
+        image: {{ .Values.productpage.image }}:{{ .Values.productpage.tag }}
+        imagePullPolicy: Always
+        {{- if or (.Values.extraEnv) (.Values.extraEnvSecret) }}
+        env:
+        {{- if .Values.extraEnv }}
+        {{- range $key, $value := .Values.extraEnv }}
+        - name: {{ $key }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.extraEnvSecret }}
+        {{- range $key, $value := .Values.extraEnvSecret }}
+        {{- range $secretName, $secretValue := $value }}
+        - name: {{ $key }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secretName }}
+              key: {{ $secretValue | quote }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+      imagePullSecrets:
+      - name: {{ .Values.productpage.imagePullSecrets }}
